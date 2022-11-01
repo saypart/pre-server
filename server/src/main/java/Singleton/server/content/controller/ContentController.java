@@ -47,6 +47,15 @@ public class ContentController {
                 new SingleResponseDto<>(contentMapper.contentToContentResponseDto(content)),HttpStatus.OK);
     }
 
+    @GetMapping("/{content-id}")
+    public ResponseEntity getContent(@PathVariable("content-id") long contentId){
+        Content content = contentService.findContent(contentId);
+
+        return new ResponseEntity<>(
+                new SingleResponseDto<>(contentMapper.contentToContentResponseDto(content)),
+                HttpStatus.OK);
+    }
+
     @DeleteMapping("/{content-id}")
     public ResponseEntity deleteContent(@PathVariable("content-id") long contentId){
         contentService.deleteContent(contentId);
