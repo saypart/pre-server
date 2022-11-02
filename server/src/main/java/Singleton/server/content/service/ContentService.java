@@ -5,6 +5,9 @@ import Singleton.server.content.repository.ContentRepository;
 import Singleton.server.exception.BusinessLogicException;
 import Singleton.server.exception.ExceptionCode;
 import Singleton.server.reply.entity.Reply;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -20,14 +23,11 @@ public class ContentService {
         return contentRepository.save(content);
     }
 
-    public Content findContent(long contentId) {return findVerifiedContentByQuery(contentId);}
+    public Content findContent(long contentId) {return findVerifiedContent(contentId);}
 
-    private Content findVerifiedContentByQuery(long contentId){
-        Optional<Content> optionalContent = contentRepository.findByContent(contentId);
-        Content findContent =
-                optionalContent.orElseThrow(() ->
-                        new BusinessLogicException(ExceptionCode.CONTENT_NOT_FOUND));
-        return findContent;
+    public Page<Content> findContents(int page, int size){
+        return contentRepository.findAll(PageRequest.of(page, size,
+                Sort.by("contentId").descending()));
     }
 
     public Content updateContent(Content content){
@@ -45,9 +45,17 @@ public class ContentService {
     }
 
     public Content findVerifiedContent(long contentId){
-        Optional<Content> optionalContent = contentRepository.findByContent(contentId);
+        Optional<Content> optionalContent = contentRepository.findById(contentId);
         Content findContent =
                 optionalContent.orElseThrow(()->
+                        new BusinessLogicException(ExceptionCode.CONTENT_NOT_FOUND));
+        return findContent;
+    }
+
+    public Content findVerifiedContentByQuery(long contentId){
+        Optional<Content> optionalContent = contentRepository.findByContent(contentId);
+        Content findContent =
+                optionalContent.orElseThrow(() ->
                         new BusinessLogicException(ExceptionCode.CONTENT_NOT_FOUND));
         return findContent;
     }

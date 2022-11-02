@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 public class ContentPostDto {
 
     private long memberId;
-    private long contentId;
     private String title;
     private String body;
     private int rec;

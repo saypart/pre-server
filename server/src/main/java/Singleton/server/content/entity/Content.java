@@ -1,5 +1,6 @@
 package Singleton.server.content.entity;
 
+import Singleton.server.audit.Auditable;
 import Singleton.server.member.entity.Member;
 import Singleton.server.reply.entity.Reply;
 import lombok.Getter;
@@ -13,7 +14,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Entity
-public class Content {
+public class Content extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long contentId;
@@ -39,6 +40,12 @@ public class Content {
     @Column (nullable = false, name = "LAST_MODIFIED_AT")
     private LocalDateTime modifiedAt = LocalDateTime.now();
 
+    public Content(String title, String body,int rec,String tags){
+        this.title = title;
+        this.body = body;
+        this.rec = rec;
+        this.tags = tags;
+    }
 //    @ManyToOne
 //    @JoinColumn(name = "memberId")
 //    private Member member;

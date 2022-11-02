@@ -4,6 +4,9 @@ import Singleton.server.exception.BusinessLogicException;
 import Singleton.server.exception.ExceptionCode;
 import Singleton.server.reply.entity.Reply;
 import Singleton.server.reply.repository.ReplyRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -20,15 +23,20 @@ public class ReplyService {
         return replyRepository.save(reply);
     }
 
-    public Reply findReply(long replyId) { return findVerifiedReplyByQuery(replyId);}
+    public Reply findReply(long replyId) { return findVerifiedReply(replyId);}
 
-    private Reply findVerifiedReplyByQuery(long replyId) {
+    public Reply findVerifiedReplyByQuery(long replyId) {
         Optional<Reply> optionalReply = replyRepository.findByReply(replyId);
         Reply findReply =
                 optionalReply.orElseThrow(() ->
                         new BusinessLogicException(ExceptionCode.REPLY_NOT_FOUND));
 
         return findReply;
+    }
+
+    public Page<Reply> findReplys(int page, int size) {
+        return replyRepository.findAll(PageRequest.of(page, size,
+                Sort.by("replyId").descending()));
     }
 
     public Reply updateReply(Reply reply) {

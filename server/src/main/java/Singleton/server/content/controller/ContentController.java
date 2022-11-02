@@ -5,14 +5,18 @@ import Singleton.server.content.dto.ContentPostDto;
 import Singleton.server.content.entity.Content;
 import Singleton.server.content.mapper.ContentMapper;
 import Singleton.server.content.service.ContentService;
+import Singleton.server.response.MultiResponseDto;
 import Singleton.server.response.SingleResponseDto;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Positive;
+import java.util.List;
 
 @RestController
 @RequestMapping("/content")
@@ -28,10 +32,9 @@ public class ContentController {
     }
 
     @PostMapping
-    public ResponseEntity postContent(
-            @Valid @RequestBody ContentPostDto contentPostDto){
-        Content content =
-                contentService.createContent(contentMapper.contentPostDtoToReply(contentPostDto));
+    public ResponseEntity postContent(@Valid @RequestBody ContentPostDto contentPostDto){
+        Content content = contentService.createContent(contentMapper.contentPostDtoToReply(contentPostDto));
+
         return new ResponseEntity<>(
                 new SingleResponseDto<>(contentMapper.contentToContentResponseDto(content)),
                 HttpStatus.CREATED);
@@ -53,6 +56,18 @@ public class ContentController {
 
         return new ResponseEntity<>(
                 new SingleResponseDto<>(contentMapper.contentToContentResponseDto(content)),
+                HttpStatus.OK);
+    }
+
+    @GetMapping
+    public ResponseEntity getContents(@Positive @RequestParam int page,
+                                      @Positive @RequestParam int size) {
+        Page<Content> pageContents = contentService.findContents(page - 1, size);
+        List<Content> contents = pageContents.getContent();
+
+        return new ResponseEntity<>(
+                new MultiResponseDto<>(contentMapper.contentToContentResponseDtos(contents),
+                        pageContents),
                 HttpStatus.OK);
     }
 

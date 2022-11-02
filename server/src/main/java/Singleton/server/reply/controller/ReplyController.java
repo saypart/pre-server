@@ -1,11 +1,14 @@
 package Singleton.server.reply.controller;
 
+import Singleton.server.content.entity.Content;
 import Singleton.server.reply.dto.ReplyPatchDto;
 import Singleton.server.reply.dto.ReplyPostDto;
 import Singleton.server.reply.entity.Reply;
 import Singleton.server.reply.mapper.ReplyMapper;
 import Singleton.server.reply.service.ReplyService;
+import Singleton.server.response.MultiResponseDto;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -15,6 +18,7 @@ import Singleton.server.response.SingleResponseDto;
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -49,6 +53,18 @@ public class ReplyController {
 
         return new ResponseEntity<>(
                 new SingleResponseDto<>(replyMapper.replyToReplyResponseDto(reply)),
+                HttpStatus.OK);
+    }
+
+    @GetMapping
+    public ResponseEntity getReplys(@Positive @RequestParam int page,
+                                       @Positive @RequestParam int size) {
+        Page<Reply> pageReplys = replyService.findReplys(page - 1, size);
+        List<Reply> replys = pageReplys.getContent();
+
+        return new ResponseEntity<>(
+                new MultiResponseDto<>(replyMapper.replyToReplyResponseDtos(replys),
+                        pageReplys),
                 HttpStatus.OK);
     }
 

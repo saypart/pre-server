@@ -10,10 +10,8 @@ import java.time.LocalDateTime;
 public class ContentPatchDto {
     private long contentId;
     private String title;
-    private String Body;
+    private String body;
     private String tags;
-
-
 
     public void setContentId(long contentId) {
         this.contentId = contentId;
